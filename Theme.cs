@@ -2,10 +2,6 @@ using System.Text;
 
 namespace Void;
 
-/// <summary>
-/// Paleta e vocabulário visual do VØID.
-/// Preto + cinza + um único destaque (verde ácido) — sem RGB gamer.
-/// </summary>
 public static class Theme
 {
     // Verde ácido (#00FF9C) via ANSI truecolor — funciona em PowerShell moderno (Win10+)

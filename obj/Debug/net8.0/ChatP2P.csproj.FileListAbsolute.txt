@@ -1,0 +1,15 @@
+C:\Users\Leonardo\Desktop\VOID\bin\Debug\net8.0\ChatP2P.exe
+C:\Users\Leonardo\Desktop\VOID\bin\Debug\net8.0\ChatP2P.deps.json
+C:\Users\Leonardo\Desktop\VOID\bin\Debug\net8.0\ChatP2P.runtimeconfig.json
+C:\Users\Leonardo\Desktop\VOID\bin\Debug\net8.0\ChatP2P.dll
+C:\Users\Leonardo\Desktop\VOID\bin\Debug\net8.0\ChatP2P.pdb
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.AssemblyInfoInputs.cache
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.AssemblyInfo.cs
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.csproj.CoreCompileInputs.cache
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.sourcelink.json
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.dll
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\refint\ChatP2P.dll
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.pdb
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ChatP2P.genruntimeconfig.cache
+C:\Users\Leonardo\Desktop\VOID\obj\Debug\net8.0\ref\ChatP2P.dll

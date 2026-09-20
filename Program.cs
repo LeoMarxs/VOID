@@ -1,43 +1,62 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Void;
 
-Console.WriteLine("=== Chat P2P (TCP) ===");
-Console.WriteLine("1 - Hospedar (aguardar conexão)");
-Console.WriteLine("2 - Conectar em um host");
-Console.Write("Escolha: ");
+await Theme.PlayBootSequenceAsync();
+
+Theme.Line("TYPE 1 TO HOST, 2 TO CONNECT", Theme.Dim);
+Theme.PrintPrompt("VOID");
 var opcao = Console.ReadLine();
 
 TcpClient client;
+string peerLabel; // usado no VOID/LINK/<nome> depois de conectar
 
 if (opcao == "1")
 {
-    Console.Write("Porta para escutar (ex: 5000): ");
+    Theme.Inline("PORT TO LISTEN (ex: 5000): ", Theme.Text);
     int porta = int.Parse(Console.ReadLine()!);
 
     var listener = new TcpListener(IPAddress.Any, porta);
     listener.Start();
-    Console.WriteLine($"Aguardando conexão na porta {porta}...");
-    Console.WriteLine("(descubra seu IP local com: ipconfig)");
+    Theme.Info_($"LISTENING ON PORT {porta}");
+    Theme.Line("      (find your local IP with: ipconfig)", Theme.Dim);
+    Theme.Line("");
+    Theme.Line("WAITING FOR INCOMING LINK...", Theme.Dim);
 
     client = await listener.AcceptTcpClientAsync();
-    Console.WriteLine("Cliente conectado!");
+    var remoteEp = client.Client.RemoteEndPoint as IPEndPoint;
+    peerLabel = remoteEp?.Address.ToString() ?? "UNKNOWN";
+    Theme.Plus($"NODE \"{peerLabel}\" CONNECTED");
 }
 else
 {
-    Console.Write("IP do host (ex: 192.168.0.10): ");
+    Theme.Inline("HOST IP (ex: 192.168.0.10): ", Theme.Text);
     string ip = Console.ReadLine()!;
-    Console.Write("Porta: ");
+    Theme.Inline("PORT: ", Theme.Text);
     int porta = int.Parse(Console.ReadLine()!);
 
     client = new TcpClient();
-    await client.ConnectAsync(ip, porta);
-    Console.WriteLine("Conectado ao host!");
+    Theme.Line("ESTABLISHING LINK...", Theme.Dim);
+    try
+    {
+        await client.ConnectAsync(ip, porta);
+    }
+    catch (SocketException)
+    {
+        Theme.Bang("CONNECTION REFUSED");
+        return;
+    }
+    peerLabel = ip;
+    Theme.Plus("LINK ESTABLISHED");
 }
 
-Console.WriteLine("Digite mensagens e pressione Enter. Digite /sair para encerrar.\n");
+Theme.Line("");
+Theme.Line("TYPE MESSAGES AND PRESS ENTER. TYPE /EXIT TO TERMINATE LINK.", Theme.Dim);
+Theme.Line("");
 
 var stream = client.GetStream();
+string promptContext = $"VOID/LINK/{peerLabel}";
 
 // Task de leitura: fica escutando o que a outra máquina manda,
 // roda em paralelo enquanto o loop principal escreve.
@@ -52,25 +71,35 @@ var tarefaLeitura = Task.Run(async () =>
             if (bytesLidos == 0) break; // outro lado fechou a conexão
 
             string mensagem = Encoding.UTF8.GetString(buffer, 0, bytesLidos);
-            Console.WriteLine($"\r> {mensagem}");
-            Console.Write("Você: ");
+
+            // limpa a linha do prompt atual antes de imprimir a mensagem recebida
+            Console.Write("\r" + new string(' ', Console.WindowWidth - 1) + "\r");
+            Theme.IncomingTag();
+            Theme.Line($"[{Theme.Timestamp()}] <{peerLabel}>  {mensagem}", Theme.Text);
+            Theme.PrintPrompt(promptContext);
         }
     }
     catch (IOException)
     {
         // conexão caiu
     }
-    Console.WriteLine("\nConexão encerrada pelo outro lado. Pressione Enter para sair.");
+
+    Theme.Line("");
+    Theme.Minus("CONNECTION TERMINATED BY REMOTE NODE");
+    Theme.Line("PRESS ENTER TO EXIT.", Theme.Dim);
 });
 
 // Loop principal: lê o que você digita e envia
 while (true)
 {
-    Console.Write("Você: ");
+    Theme.PrintPrompt(promptContext);
     string? texto = Console.ReadLine();
 
-    if (texto is null || texto == "/sair" || !client.Connected)
+    if (texto is null || texto == "/exit" || !client.Connected)
         break;
+
+    if (string.IsNullOrWhiteSpace(texto))
+        continue;
 
     byte[] dados = Encoding.UTF8.GetBytes(texto);
     try
@@ -79,10 +108,11 @@ while (true)
     }
     catch (IOException)
     {
-        Console.WriteLine("Falha ao enviar. Conexão perdida.");
+        Theme.Bang("TRANSMISSION FAILED — LINK LOST");
         break;
     }
 }
 
 client.Close();
-Console.WriteLine("Chat encerrado.");
+Theme.Line("");
+Theme.Minus("LINK CLOSED");
